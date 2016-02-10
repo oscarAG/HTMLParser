@@ -12,7 +12,8 @@ import java.util.ArrayList;
  * Created by oscar on 2/9/16.
  */
 public class Parser {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException
+    {
         ArrayList<String> urls = new ArrayList<>(); //array list of URL's
         urls.add("http://example.com/");
         urls.add("http://www.utrgv.edu/en-us/admissions/paying-for-college/financial-aid/index.htm");
