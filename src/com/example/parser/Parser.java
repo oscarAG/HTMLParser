@@ -11,31 +11,29 @@ import java.util.ArrayList;
  * HTML Parser
  * Created by oscar on 2/9/16.
  */
-public class Parser {
+public class Parser extends HtmlUtilities
+{
     public static void main(String[] args) throws IOException
     {
-        ArrayList<String> urls = new ArrayList<>(); //array list of URL's
-        urls.add("http://example.com/");
-        urls.add("http://www.utrgv.edu/en-us/admissions/paying-for-college/financial-aid/index.htm");
-        urls.add("http://udallas.edu/offices/hr/employeebenefits/tuition-waiver.php");
+        ArrayList<String> urls = initUrls(); // init list of urls
 
         for (String url : urls)
-        { //loop through all URL's
-            System.out.println("URL " + urls.indexOf(url) + ": " + url); // current index
-            Document doc = Jsoup.connect(url).get();        // get html from url
-            System.out.println(doc.title());
-            ArrayList<Elements> els = new ArrayList<>();    // array of tags to be ripped
-            els.add(doc.select("h1"));
-            els.add(doc.select("h2"));
-            els.add(doc.select("h3"));
-            for(Elements e: els)
-            {   //loop through tag types in the array list
-                for(Element e_sub: e)
-                {   //loop through all of a tag type (ex. all of the h1)
-                    Elements parent_sibs = e_sub.siblingElements(); //init the tag's children
-                    parent_sibs.forEach(System.out::println); //loop through the tag, print all children
+        {   // loop through all URL's
+            System.out.println("URL " + urls.indexOf(url) + ": " + url); // current url index
+            Document doc = Jsoup.connect(url).get();        // call to the page and get html
+            removeAllAttributes(doc.getAllElements());      // remove all attributes of each element in the html doc
+            System.out.println(doc.title());                //print the title
+            ArrayList<Elements> title_tags = initTags(doc); //list of all tags to consider titles
+            for(Elements title_type: title_tags)
+            {       // loop through tag types in the array list (ex. h1, then h2, then h3)
+                for(Element tag: title_type)
+                {   // loop through all of a tag type (ex. all of the h1)
+                    Elements tag_siblings = tag.siblingElements();  // init the tag's children
+                    tag_siblings.forEach(System.out::println);      // loop through the tag, print all children
                 }
             }
+            System.out.println();
         }
     }
+    
 }
