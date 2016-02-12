@@ -2,7 +2,6 @@ package com.example.parser;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -21,15 +20,13 @@ public class Parser extends HtmlUtilities
         {
             System.out.println("URL " + urls.indexOf(url) + ": " + url); // current url index
             Document doc = Jsoup.connect(url).get(); // call to the page and get html
+            System.out.println("Title: " + doc.title());    //print the title
             removeComments(doc); //remove all comments from the page
             removeIrrelevantTags(doc); //remove predetermined irrelevant tags (ex. head)
             removeIrrelevantAttributes(doc); // remove all irrelevant attributes of each element in the html doc
             removeEmptyTagPairs(doc); //remove empty tag pairs after the doc has been stripped
-            System.out.println("Title: " + doc.title());    //print the title
-            System.out.println(doc);
-
-            ArrayList<Elements> title_tags = initTags(doc); //list of all tags to consider titles
-
+            System.out.println(doc); //print the doc after all operations
+            System.out.println(); //new line
         }
     }
     

@@ -63,8 +63,8 @@ public class HtmlUtilities
                     }
                 }
             }
-            //check if this is an 'a' tag, and if it has no attributes
-            if(e.tagName().equals("a") && e.attributes().size() == 0)
+            //Check if the it's an 'a' tag, and if it is, if it satisfies the requirements for being deleted
+            if(isBlacklistedTag(e))
             {
                 e.remove();
             }
@@ -74,6 +74,7 @@ public class HtmlUtilities
     //Remove irrelevant tags
     public static void removeIrrelevantTags(Document doc)
     {
+        //initialize an array of the tags not desired in the document
         ArrayList<Elements> tags_to_remove = new ArrayList<>();
         tags_to_remove.add(doc.select("head"));
         tags_to_remove.add(doc.select("figure"));
@@ -85,6 +86,10 @@ public class HtmlUtilities
         {   //for each tag
             el.forEach(Element::remove); //remove all
         }
+        //unwrap unnecessary tags which you wish to keep the text from
+        doc.select("i").unwrap();
+        doc.select("strong").unwrap();
+        doc.select("em").unwrap();
     }
 
     //Remove comments
@@ -113,12 +118,24 @@ public class HtmlUtilities
     public static void removeEmptyTagPairs(Document doc)
     {
         //remove empty tag pairs
-        for(Element e: doc.getAllElements())
-        {   //for each element in the doc
-            if (!e.hasText() && e.isBlock()) {
-                e.remove();
-            }
+        //for each element in the doc
+        doc.select("*").stream().filter(e -> !e.hasText() && e.isBlock()).forEach(Element::remove); //remove empty pairs
+    }
+
+    //Check if an element is blacklisted to be deleted
+    //TODO: Preferably should have an array of blacklisted keywords, and loop through to delete.
+    public static boolean isBlacklistedTag(Element e)
+    {
+        String content = e.text().toLowerCase(); //get the text inside for checking
+        //check if this is an 'a' tag, and if it has no attributes
+        if(e.tagName().equals("a"))
+        {
+            if(e.attributes().size() == 0 || content.contains("give") ||
+                    content.contains("alumni") || content.contains("athletics") ||
+                    content.contains("bookstore"))
+            {return true;}
         }
+        return false;
     }
 
 }
