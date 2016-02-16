@@ -164,4 +164,36 @@ public class HtmlUtilities
         String domain = uri.getHost();
         return domain.startsWith("www.") ? domain.substring(4) : domain;
     }
+    /****************************************************************************************************/
+    //Parse the document into headers and contents
+    //TODO: Save to docs and dirs
+    public static void parseDoc(ArrayList<String> headers, Elements el)
+    {
+        int file_counter = 0;
+        boolean header_found = false;
+        for(Element e : el)
+        {
+            if(headers.contains(e.tagName()))
+            {
+                if(header_found)
+                {
+                    System.out.println("<\\html>");
+                }
+                header_found = true;
+                String title = e.unwrap().toString().replaceAll(" ", "_").toLowerCase();
+                System.out.println("\nFile " + file_counter + ": " + title);
+                System.out.println("<html>");
+                file_counter++;
+            }
+            else if(header_found)
+            {
+                System.out.println(e);
+            }
+        }
+        if(header_found)
+        {
+            System.out.println("<\\html>");
+        }
+        System.out.println("-eof-");
+    }
 }
