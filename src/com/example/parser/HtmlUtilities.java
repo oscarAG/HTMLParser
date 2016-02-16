@@ -167,7 +167,7 @@ public class HtmlUtilities
     /****************************************************************************************************/
     //Parse the document into headers and contents
     //TODO: Save to docs and dirs
-    public static void parseDoc(ArrayList<String> headers, Elements el)
+    public static void parseDoc(ArrayList<String> headers, Elements el, String path)
     {
         int file_counter = 0;
         boolean header_found = false;
@@ -181,7 +181,7 @@ public class HtmlUtilities
                 }
                 header_found = true;
                 String title = e.unwrap().toString().replaceAll(" ", "_").toLowerCase();
-                System.out.println("\nFile " + file_counter + ": " + title);
+                System.out.println("\nParsed File " + file_counter + ": " + title);
                 System.out.println("<html>");
                 file_counter++;
             }
