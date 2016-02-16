@@ -6,6 +6,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -40,14 +42,11 @@ public class Parser extends HtmlUtilities
     }
 
     //Initialize a list of URLs to be called to
-    //TODO:Get all URLS from a text file instead, and init array dynamically
-    public static void setUrls()
-    {
-        Parser.urls = new ArrayList<>(); //array list of URL's
-        urls.add("http://www.utrgv.edu/en-us/admissions/paying-for-college/financial-aid/index.htm");
-        urls.add("http://www.utrgv.edu/en-us/admissions/paying-for-college/scholarships/index.htm");
-        //urls.add("http://www.utrgv.edu/en-us/admissions/paying-for-college/cost-of-attendance/index.htm");
-        //urls.add("http://www.utrgv.edu/en-us/admissions/paying-for-college/tuition-fees/index.htm");
+    public static void setUrls() throws IOException {
+        Parser.urls = new ArrayList<>();
+        urls.addAll(Files.readAllLines(Paths.get("assets/urls.txt")) //basically a for loop that reads from a file
+                .stream()
+                .collect(Collectors.toList()));
     }
 
     //Initialize a list of all tags to be completely removed from the document, along with their child elements
@@ -64,9 +63,9 @@ public class Parser extends HtmlUtilities
         tags.add("header");
         tags.add("nav");
         tags.add("footer");
+        tags.add("aside");
         tags.add("br");
-        tags_to_remove //Get all tags to remove into the elements array list
-                .addAll(tags.stream()
+        tags_to_remove.addAll(tags.stream()//Get all tags to remove into the elements array list
                 .map(doc::select)
                 .collect(Collectors.toList()));
     }
@@ -80,8 +79,7 @@ public class Parser extends HtmlUtilities
         tags.add("strong");
         tags.add("em");
         tags.add("abbr");
-        tags_to_unwrap //Get all tags to remove into the elements array list
-                .addAll(tags.stream()
+        tags_to_unwrap.addAll(tags.stream()//Get all tags to remove into the elements array list
                 .map(doc::select)
                 .collect(Collectors.toList()));
     }

@@ -19,32 +19,45 @@ public class HtmlUtilities
     {
         for (Element e : doc.getAllElements()) //first pass through
         {   //for each element
-            for (Attribute a : e.attributes())
-            {   //for each attribute in the element
-                if(!a.getKey().equals("href"))
-                {   //skip href tags
+            if(e.tagName().equals("a"))
+            {   //hyperlink tag found
+                hyperlinkOperations(e);
+            }
+            else
+            {   //hyperlink tag not found
+                for (Attribute a : e.attributes())
+                {   //for each attribute in the element
                     e.removeAttr(a.getKey());
-                }
-                else
-                {   //href tag found, do operations for urls
-                    if (a.getValue().contains("https") || a.getValue().contains("http") || a.getValue().contains("mailto"))
-                    {   //if "https" or "http" was found in the url of the href
-                        if (!verifyUrl(a.getValue()))
-                        {   //if the url is bad
-                            e.removeAttr(a.getKey()); //remove
-                        }
-                        else if(a.getValue().contains("mailto"))
-                        {
-                            e.unwrap();
-                        }
-                    } else {   //the link is unusable, delete
-                        e.removeAttr(a.getKey());
-                    }
                 }
             }
             if(isBlacklistedKeyword(e))
             {   //Check if the it's a blacklisted tag, and if it is, if it satisfies the requirements for being deleted
                 e.remove();
+            }
+        }
+    }
+
+    //Hyperlink operations
+    //Helper to removeIrrelevantAttributes(...)
+    private static void hyperlinkOperations(Element e)
+    {
+        for(Attribute a : e.attributes())
+        {   //go through each attribute in the 'a' element
+            if(!a.getKey().equals("href"))
+            {   //skip href tags
+                e.removeAttr(a.getKey());
+            }
+            else
+            {   //href tag found, do operations for urls
+                if (a.getValue().contains("https") || a.getValue().contains("http") || a.getValue().contains("mailto"))
+                {   //if "https" or "http" was found in the url of the href
+                    if (!verifyUrl(a.getValue()))
+                    {   //if the url is bad
+                        e.removeAttr(a.getKey()); //remove
+                    }
+                } else {   //the link is unusable, delete
+                    e.removeAttr(a.getKey());
+                }
             }
         }
     }
@@ -128,8 +141,7 @@ public class HtmlUtilities
     public static void unwrapNestedRedundancies(Document doc)
     {
         //for each element
-        //if the element only has one child, or has an "aside" tag with a "div" child
-        doc.getAllElements()
+        doc.getAllElements()//if the element only has one child, or has an "aside" tag with a "div" child
                 .stream()
                 .filter(e -> (e.children().size() == 1 && e.tagName().equals("div")))
                 .forEach(Element::unwrap); //unwrap it
