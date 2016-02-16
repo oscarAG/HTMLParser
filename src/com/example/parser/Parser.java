@@ -25,6 +25,7 @@ public class Parser extends HtmlUtilities
             removeIrrelevantTags(doc); //remove predetermined irrelevant tags (ex. head)
             removeIrrelevantAttributes(doc); // remove all irrelevant attributes of each element in the html doc
             removeEmptyTagPairs(doc); //remove empty tag pairs after the doc has been stripped
+            unwrapNestedRedundancies(doc); //unwrap nested tags with only one child
             System.out.println(doc); //print the doc after all operations
             System.out.println(); //new line
         }

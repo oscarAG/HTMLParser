@@ -63,8 +63,8 @@ public class HtmlUtilities
                     }
                 }
             }
-            //Check if the it's an 'a' tag, and if it is, if it satisfies the requirements for being deleted
-            if(isBlacklistedTag(e))
+            //Check if the it's a blacklisted tag, and if it is, if it satisfies the requirements for being deleted
+            if(isBlacklistedKeyword(e))
             {
                 e.remove();
             }
@@ -82,6 +82,9 @@ public class HtmlUtilities
         tags_to_remove.add(doc.select("form"));
         tags_to_remove.add(doc.select("img"));
         tags_to_remove.add(doc.select("article"));
+        tags_to_remove.add(doc.select("header"));
+        tags_to_remove.add(doc.select("nav"));
+        tags_to_remove.add(doc.select("footer"));
         for(Elements el: tags_to_remove)
         {   //for each tag
             el.forEach(Element::remove); //remove all
@@ -90,6 +93,7 @@ public class HtmlUtilities
         doc.select("i").unwrap();
         doc.select("strong").unwrap();
         doc.select("em").unwrap();
+        doc.select("abbr").unwrap();
     }
 
     //Remove comments
@@ -119,12 +123,15 @@ public class HtmlUtilities
     {
         //remove empty tag pairs
         //for each element in the doc
-        doc.select("*").stream().filter(e -> !e.hasText() && e.isBlock()).forEach(Element::remove); //remove empty pairs
+        doc.select("*")
+                .stream()
+                .filter(e -> !e.hasText() && e.isBlock())
+                .forEach(Element::remove); //remove empty pairs
     }
 
     //Check if an element is blacklisted to be deleted
     //TODO: Preferably should have an array of blacklisted keywords, and loop through to delete.
-    public static boolean isBlacklistedTag(Element e)
+    public static boolean isBlacklistedKeyword(Element e)
     {
         String content = e.text().toLowerCase(); //get the text inside for checking
         //check if this is an 'a' tag, and if it has no attributes
@@ -136,6 +143,17 @@ public class HtmlUtilities
             {return true;}
         }
         return false;
+    }
+
+    //unwrap nested tags with only one child
+    public static void unwrapNestedRedundancies(Document doc)
+    {
+        //for each element
+        //if the element only has one child, or has an "aside" tag with a "div" child
+        doc.getAllElements()
+                .stream()
+                .filter(e -> (e.children().size() == 1 && e.tagName().equals("div")))
+                .forEach(Element::unwrap); //unwrap it
     }
 
 }
