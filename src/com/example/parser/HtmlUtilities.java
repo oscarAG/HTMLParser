@@ -27,21 +27,24 @@ public class HtmlUtilities
                 }
                 else
                 {   //href tag found, do operations for urls
-                    if(isBlacklistedKeyword(e))
-                    {   //Check if the it's a blacklisted tag, and if it is, if it satisfies the requirements for being deleted
-                        e.remove();
-                    }
-                    else
-                    {   //it's not blacklisted, so make sure it's a proper url
-                        if (a.getValue().contains("https") || a.getValue().contains("http")) {   //if "https" or "http" was found in the url of the href
-                            if (!verifyUrl(a.getValue())) {   //if the url is bad
-                                e.removeAttr(a.getKey()); //remove
-                            } //else it's all good, keep it in
-                        } else {   //the link is unusable, delete
-                            e.removeAttr(a.getKey());
+                    if (a.getValue().contains("https") || a.getValue().contains("http") || a.getValue().contains("mailto"))
+                    {   //if "https" or "http" was found in the url of the href
+                        if (!verifyUrl(a.getValue()))
+                        {   //if the url is bad
+                            e.removeAttr(a.getKey()); //remove
                         }
+                        else if(a.getValue().contains("mailto"))
+                        {
+                            e.unwrap();
+                        }
+                    } else {   //the link is unusable, delete
+                        e.removeAttr(a.getKey());
                     }
                 }
+            }
+            if(isBlacklistedKeyword(e))
+            {   //Check if the it's a blacklisted tag, and if it is, if it satisfies the requirements for being deleted
+                e.remove();
             }
         }
     }
