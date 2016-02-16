@@ -49,14 +49,23 @@ public class HtmlUtilities
             }
             else
             {   //href tag found, do operations for urls
-                if (a.getValue().contains("https") || a.getValue().contains("http") || a.getValue().contains("mailto"))
-                {   //if "https" or "http" was found in the url of the href
-                    if (!verifyUrl(a.getValue()))
-                    {   //if the url is bad
-                        e.removeAttr(a.getKey()); //remove
+                if(e.parent().tagName().equals("p"))
+                {   //If the 'a' tag parent was a 'p' tag
+                    e.unwrap(); //just unwrap it, but keep the text
+                }
+                else
+                {
+                    if (a.getValue().contains("https") || a.getValue().contains("http") || a.getValue().contains("mailto"))
+                    {   //if "https" or "http" was found in the url of the href
+                        if (hasSocialMedia(a.getValue()))
+                        {   //if the url has social media
+                            e.removeAttr(a.getKey()); //remove the attribute
+                        }
                     }
-                } else {   //the link is unusable, delete
-                    e.removeAttr(a.getKey());
+                    else
+                    {   //the link is unusable, delete
+                        e.removeAttr(a.getKey());
+                    }
                 }
             }
         }
@@ -64,10 +73,10 @@ public class HtmlUtilities
 
     //Check if a url is valid, mark for deletion if not
     //Helper to removeIrrelevantAttributes(...)
-    private static boolean verifyUrl(String url)
+    private static boolean hasSocialMedia(String url)
     {
         //check for social media
-        return !(url.contains("facebook") ||
+        return (url.contains("facebook") ||
                 url.contains("twitter") ||
                 url.contains("linkedin") ||
                 url.contains("youtube"));
