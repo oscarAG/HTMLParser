@@ -1,4 +1,5 @@
 http://www.utrgv.edu/en-us/admissions/paying-for-college/financial-aid/index.htm
 http://www.utrgv.edu/en-us/admissions/paying-for-college/scholarships/index.htm
-http://www.utrgv.edu/en-us/admissions/paying-for-college/cost-of-attendance/index.htm
-http://www.utrgv.edu/en-us/admissions/paying-for-college/tuition-fees/index.htm
+#http://www.utrgv.edu/en-us/admissions/paying-for-college/cost-of-attendance/index.htm
+#http://www.utrgv.edu/en-us/admissions/paying-for-college/tuition-fees/index.htm
+http://finaid.utexas.edu/financialaid/types.html

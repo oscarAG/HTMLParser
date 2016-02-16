@@ -16,7 +16,6 @@ import java.util.ArrayList;
 public class HtmlUtilities
 {
     //Remove attributes from every element in the document, unless it meets specific requirements
-    //TODO: Keep URLS for crawling
     public static void removeIrrelevantAttributes(Document doc)
     {
         for (Element e : doc.getAllElements()) //first pass through
@@ -98,7 +97,8 @@ public class HtmlUtilities
                     content.contains("alumni") ||
                     content.contains("athletics") ||
                     content.contains("apply") ||
-                    content.contains("bookstore"))
+                    content.contains("bookstore") ||
+                    content.contains("home"))
             {return true;}
         }
         return false;

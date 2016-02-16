@@ -53,14 +53,15 @@ public class Parser extends HtmlUtilities
     public static void setUrls() throws IOException, URISyntaxException {
         Parser.urls = new ArrayList<>();
         Parser.domains = new ArrayList<>();
-        urls.addAll(Files.readAllLines(Paths.get("assets/urls.txt")) //basically a for loop that reads from a file
-                .stream()
-                .collect(Collectors.toList()));
+        urls.addAll(Files.readAllLines(Paths.get("assets/urls.txt")) //read from file
+                .stream().filter(line -> line.charAt(0) != '#') //if the line isn't commented out
+                .collect(Collectors.toList())); //add to list
         //Randomize to cover order pattern
         long seed = System.nanoTime();
         Collections.shuffle(urls, new Random(seed));
         System.out.println("URLs after being shuffled:");
         urls.forEach(System.out::println); //print the order
+        System.out.println();
         for(String url : urls)
         {   //Get the domain from the url and add it to the domains list, if it does not currently exist
             String domain = getDomainName(url);
@@ -70,6 +71,7 @@ public class Parser extends HtmlUtilities
         }
         System.out.println("Domains to be visited:");
         domains.forEach(System.out::println);
+        System.out.println("\n");
     }
 
     //Initialize a list of all tags to be completely removed from the document, along with their child elements
@@ -82,7 +84,7 @@ public class Parser extends HtmlUtilities
         tags.add("script");
         tags.add("form");
         tags.add("img");
-        tags.add("article");
+        //tags.add("article");
         tags.add("header");
         tags.add("nav");
         tags.add("footer");
@@ -102,6 +104,7 @@ public class Parser extends HtmlUtilities
         tags.add("strong");
         tags.add("em");
         tags.add("abbr");
+        tags.add("sup");
         tags_to_unwrap.addAll(tags.stream()//Get all tags to remove into the elements array list
                 .map(doc::select)
                 .collect(Collectors.toList()));
