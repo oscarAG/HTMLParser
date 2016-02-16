@@ -6,9 +6,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -18,10 +21,10 @@ import java.util.stream.Collectors;
 public class Parser extends HtmlUtilities
 {
     private static ArrayList<Elements> tags_to_remove, tags_to_unwrap;
-    private static ArrayList<String> urls;
+    private static ArrayList<String> urls, domains;
 
-    public static void main(String[] args) throws IOException
-    {
+    public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
+        int delay = 1000; //delay for each call in ms
         setUrls();
         // loop through all URL's
         for (String url : urls)
@@ -38,15 +41,35 @@ public class Parser extends HtmlUtilities
             removeEmptyTagPairs(doc); //remove empty tag pairs
             unwrapNestedRedundancies(doc); //unwrap nested tags with only one child
             System.out.println(doc + "\n"); //print the doc for review
+            if(urls.indexOf(url)!=urls.size()-1)
+            {   //If not on the last url, wait 'x' ms before proceeding to reduce stress on the server
+                System.out.println("Waiting " + delay + "ms before proceeding...\n");
+                Thread.sleep(delay);
+            }
         }
     }
 
     //Initialize a list of URLs to be called to
-    public static void setUrls() throws IOException {
+    public static void setUrls() throws IOException, URISyntaxException {
         Parser.urls = new ArrayList<>();
+        Parser.domains = new ArrayList<>();
         urls.addAll(Files.readAllLines(Paths.get("assets/urls.txt")) //basically a for loop that reads from a file
                 .stream()
                 .collect(Collectors.toList()));
+        //Randomize to cover order pattern
+        long seed = System.nanoTime();
+        Collections.shuffle(urls, new Random(seed));
+        System.out.println("URLs after being shuffled:");
+        urls.forEach(System.out::println); //print the order
+        for(String url : urls)
+        {   //Get the domain from the url and add it to the domains list, if it does not currently exist
+            String domain = getDomainName(url);
+            if(!domains.contains(domain)){
+                domains.add(domain);
+            }
+        }
+        System.out.println("Domains to be visited:");
+        domains.forEach(System.out::println);
     }
 
     //Initialize a list of all tags to be completely removed from the document, along with their child elements

@@ -3,6 +3,8 @@ package com.example.parser;
 import org.jsoup.nodes.*;
 import org.jsoup.select.Elements;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 /**
@@ -150,10 +152,16 @@ public class HtmlUtilities
     public static void unwrapNestedRedundancies(Document doc)
     {
         //for each element
-        doc.getAllElements()//if the element only has one child, or has an "aside" tag with a "div" child
+        doc.getAllElements()//if a div element only has one child
                 .stream()
                 .filter(e -> (e.children().size() == 1 && e.tagName().equals("div")))
                 .forEach(Element::unwrap); //unwrap it
     }
-
+    /****************************************************************************************************/
+    //Get the domain from a given url
+    public static String getDomainName(String url) throws URISyntaxException {
+        URI uri = new URI(url);
+        String domain = uri.getHost();
+        return domain.startsWith("www.") ? domain.substring(4) : domain;
+    }
 }
