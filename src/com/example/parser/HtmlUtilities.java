@@ -18,9 +18,11 @@ public class HtmlUtilities
     public static ArrayList<String> initUrls()
     {
         ArrayList<String> urls = new ArrayList<>(); //array list of URL's
-        urls.add("http://example.com/");
+        //urls.add("http://example.com/");
+        urls.add("http://www.utrgv.edu/en-us/admissions/paying-for-college/cost-of-attendance/index.htm");
         urls.add("http://www.utrgv.edu/en-us/admissions/paying-for-college/financial-aid/index.htm");
-        urls.add("http://udallas.edu/offices/hr/employeebenefits/tuition-waiver.php");
+        urls.add("http://www.utrgv.edu/en-us/admissions/paying-for-college/tuition-fees/index.htm");
+        urls.add("http://www.utrgv.edu/en-us/admissions/paying-for-college/scholarships/index.htm");
         return urls;
     }
 
@@ -85,6 +87,7 @@ public class HtmlUtilities
         tags_to_remove.add(doc.select("header"));
         tags_to_remove.add(doc.select("nav"));
         tags_to_remove.add(doc.select("footer"));
+        tags_to_remove.add(doc.select("br"));
         for(Elements el: tags_to_remove)
         {   //for each tag
             el.forEach(Element::remove); //remove all
@@ -146,6 +149,7 @@ public class HtmlUtilities
     }
 
     //unwrap nested tags with only one child
+    //TODO: Check for lists with only one element, and replace it with a 'p' tag.
     public static void unwrapNestedRedundancies(Document doc)
     {
         //for each element
