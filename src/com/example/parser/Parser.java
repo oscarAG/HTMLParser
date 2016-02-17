@@ -27,14 +27,16 @@ public class Parser extends HtmlUtilities
         int delay = 3000; //delay for each call in ms
         setUrls();
         setHeaders();
+        File dir = new File("docs"); //create a docs directory if it doesn't exist
+        if(dir.mkdir()){System.out.println("docs directory created.");}
         // loop through all URL's
         for (String url : urls)
         {
             Document doc = Jsoup.connect(url).get(); //Retrieve HTML from the url
-            System.out.println("URL " + urls.indexOf(url) + ": " + url); //Print the index and URL
+            System.out.println("reading from url " + urls.indexOf(url) + ": " + url + "..."); //Print the index and URL
             String title = doc.title().replaceAll("[^A-Za-z0-9]", "").toLowerCase();
             //System.out.println(doc);
-            System.out.println("Title: " + title); //print the title of the page
+            System.out.println("\ttitle: " + title); //print the title of the page
             setTagsToRemove(doc);
             setTagsToUnwrap(doc);
             removeComments(doc); //remove all comments from the page
@@ -45,7 +47,7 @@ public class Parser extends HtmlUtilities
             unwrapNestedRedundancies(doc); //unwrap nested tags with only one child
             //System.out.println(doc + "\n"); //print the doc for review
             parseDoc(headers, doc.getAllElements(), url_domain.get(url));
-            System.out.println("Waiting " + delay + "ms before proceeding...\n");
+            System.out.println("\twaiting " + delay + "ms before proceeding...\n");
             Thread.sleep(delay);
         }
     }
@@ -54,19 +56,24 @@ public class Parser extends HtmlUtilities
     public static void setUrls() throws IOException, URISyntaxException {
         Parser.urls = new ArrayList<>();
         Parser.url_domain = new HashMap<>();
+        System.out.println("reading urls from file...");
         urls.addAll(Files.readAllLines(Paths.get("assets/urls.txt")) //read from file
                 .stream().filter(line -> line.charAt(0) != '#') //if the line isn't commented out
                 .collect(Collectors.toList())); //add to list
+        System.out.println("files read.\nurls stored.");
         //Randomize to cover order pattern
+        System.out.println("shuffling...");
         long seed = System.nanoTime();
         Collections.shuffle(urls, new Random(seed));
-        System.out.println("URLs shuffled.");
-        //urls.forEach(System.out::println); //print the order
+        System.out.println("urls shuffled.");
+        System.out.println("mapping the urls to the domains...");
         for(String url : urls)
         {   //Get the domain from the url and map it
-            String domain = getDomainName(url);
+            String domain = getDomainName(url).replace(".", "_");
             url_domain.put(url, domain);
         }
+        System.out.println("done.");
+        System.out.println("creating necessary directories from domains obtained...");
         for(String key : url_domain.keySet())
         {   //print the map and create a directory of the domain if it dne
             String domain = url_domain.get(key).replace(".", "_");
@@ -76,8 +83,7 @@ public class Parser extends HtmlUtilities
                 System.out.println(dir.toString() + " created.");
             }
         }
-        for(String key : url_domain.keySet()){System.out.println(key + " - " + url_domain.get(key));}
-        System.out.println("\n");
+        System.out.println("done.\n");
     }
 
     //Initialize a list of all tags to be completely removed from the document, along with their child elements
@@ -90,7 +96,6 @@ public class Parser extends HtmlUtilities
         tags.add("script");
         tags.add("form");
         tags.add("img");
-        //tags.add("article");
         tags.add("header");
         tags.add("nav");
         tags.add("footer");

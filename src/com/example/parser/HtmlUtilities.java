@@ -3,6 +3,10 @@ package com.example.parser;
 import org.jsoup.nodes.*;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -166,34 +170,49 @@ public class HtmlUtilities
     }
     /****************************************************************************************************/
     //Parse the document into headers and contents
-    //TODO: Save to docs and dirs
-    public static void parseDoc(ArrayList<String> headers, Elements el, String path)
-    {
-        int file_counter = 0;
-        boolean header_found = false;
+    public static void parseDoc(ArrayList<String> headers, Elements el, String path) throws IOException {
+        BufferedWriter bw = null;
+        File file;
         for(Element e : el)
         {
             if(headers.contains(e.tagName()))
-            {
-                if(header_found)
-                {
-                    System.out.println("<\\html>");
+            {   //if the current element is one of the headers
+                if(bw!=null)
+                {   //close the file if it's not null and has been created
+                    bw.write("</html>");
+                    bw.close();
+                    System.out.println("\tdone.");
                 }
-                header_found = true;
-                String title = e.unwrap().toString().replaceAll(" ", "_").toLowerCase();
-                System.out.println("\nParsed File " + file_counter + ": " + title);
-                System.out.println("<html>");
-                file_counter++;
+                String raw_title = e.unwrap().toString();
+                String title = raw_title.toLowerCase()
+                        .replaceAll("[^A-Za-z0-9]", " ") //get rid of all non-alphanumeric chars
+                        .replaceAll("\\s+", " ") //change whitespace to a single space
+                        .replaceAll(" ", "_") //replace all spaces with an underscore
+                        .replace("nsbp", "")
+                        .replace("amp", "and");
+                String doc_path = "docs/" + path + "/" + title + ".html";
+                file = new File(doc_path); //specify the path
+                FileWriter fw = new FileWriter(file.getAbsoluteFile());
+                bw = new BufferedWriter(fw); //open a buffered writer to write to file
+                System.out.println("\tcreating " + doc_path + "...");
+                bw.write("<html>\n"); //write the html tag
+                bw.write("<h3>" + raw_title + "</h3>" + "\n"); //write the header tag
             }
-            else if(header_found)
+            else
             {
-                System.out.println(e);
+                if(bw != null)
+                {   //write misc content to the file
+                    bw.write(e.toString() + "\n");
+                }
             }
+
         }
-        if(header_found)
-        {
-            System.out.println("<\\html>");
+        if(bw!=null)
+        {   //close the last file in the url
+            bw.write("</html>");
+            bw.close();
+            System.out.println("\tdone.");
         }
-        System.out.println("-eof-");
+        System.out.println("\teof...\n\tmoving on...\n");
     }
 }
