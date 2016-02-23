@@ -35,7 +35,7 @@ public class HtmlUtilities
                     e.removeAttr(a.getKey());
                 }
             }
-            if(isBlacklistedKeyword(e))
+            if(hasBlacklistedKeyword(e))
             {   //Check if the it's a blacklisted tag, and if it is, if it satisfies the requirements for being deleted
                 e.remove();
             }
@@ -78,7 +78,7 @@ public class HtmlUtilities
 
     //Check if a url is valid, mark for deletion if not
     //Helper to removeIrrelevantAttributes(...)
-    private static boolean hasSocialMedia(String url)
+    public static boolean hasSocialMedia(String url)
     {
         //check for social media
         return (url.contains("facebook") ||
@@ -90,7 +90,7 @@ public class HtmlUtilities
     //Check if an element is blacklisted to be deleted
     //TODO: Preferably should have an array of blacklisted keywords, and loop through to delete.
     //Helper to removeIrrelevantAttributes(...)
-    private static boolean isBlacklistedKeyword(Element e)
+    public static boolean hasBlacklistedKeyword(Element e)
     {
         String content = e.text().toLowerCase(); //get the text inside for checking
         //check if this is an 'a' tag, and if it has no attributes
