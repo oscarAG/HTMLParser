@@ -35,7 +35,6 @@ public class Parser extends HtmlUtilities
             Document doc = Jsoup.connect(url).get(); //Retrieve HTML from the url
             System.out.println("reading from url " + urls.indexOf(url) + ": " + url + "..."); //Print the index and URL
             String title = doc.title().replaceAll("[^A-Za-z0-9]", "").toLowerCase();
-            //System.out.println(doc);
             System.out.println("\ttitle: " + title); //print the title of the page
             setTagsToRemove(doc);
             setTagsToUnwrap(doc);
@@ -45,7 +44,6 @@ public class Parser extends HtmlUtilities
             removeIrrelevantAttributes(doc); // remove irrelevant attributes of each element in the html
             removeEmptyTagPairs(doc); //remove empty tag pairs
             unwrapNestedRedundancies(doc); //unwrap nested tags with only one child
-            //System.out.println(doc + "\n"); //print the doc for review
             parseDoc(headers, doc.getAllElements(), url_domain.get(url));
             System.out.println("\twaiting " + delay + "ms before proceeding...\n");
             Thread.sleep(delay);
