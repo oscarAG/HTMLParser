@@ -1,7 +1,5 @@
 package com.example.parser;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,17 +13,12 @@ public class Main extends HtmlUtilities
         //Get all links to the universities in the United States
         Map<String, String> uni_hash = new HashMap<>();
         Universities uni = new Universities();
-        uni_hash = uni.getUniversities();
+        //uni.printMap();
+        uni_hash = uni.getUniversities(); //hash map of all parent urls
 
+        //Todo: Add the parent urls to a queue
+        //Crawl the parent URLs
 
-        /*
-        //Crawl parent URLs, and obtain all links correlating to financial aid.
-        try {
-            new Crawler();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
         /*
         //Parse the URLs
         try {
