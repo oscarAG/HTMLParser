@@ -163,56 +163,67 @@ public class HtmlUtilities
     }
     /****************************************************************************************************/
     //Get the domain from a given url
-    public static String getDomainName(String url) throws URISyntaxException {
-        URI uri = new URI(url);
-        String domain = uri.getHost();
-        return domain.startsWith("www.") ? domain.substring(4) : domain;
+    public static String getDomainName(String url){
+        URI uri;
+        try {
+            uri = new URI(url);
+            String domain = uri.getHost();
+            return domain.startsWith("www.") ? domain.substring(4) : domain;
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return "https://google.com";
     }
     /****************************************************************************************************/
     //Parse the document into headers and contents
-    public static void parseDoc(ArrayList<String> headers, Elements el, String path) throws IOException {
+    public static void parseDoc(ArrayList<String> headers, Elements el, String path) {
         BufferedWriter bw = null;
         File file;
-        for(Element e : el)
-        {
-            if(headers.contains(e.tagName()))
-            {   //if the current element is one of the headers
-                if(bw!=null)
-                {   //close the file if it's not null and has been created
-                    bw.write("</html>");
-                    bw.close();
-                    System.out.println("\tdone.");
-                }
-                String raw_title = e.unwrap().toString();
-                String title = raw_title.toLowerCase()
-                        .replaceAll("[^A-Za-z0-9]", " ") //get rid of all non-alphanumeric chars
-                        .replaceAll("\\s+", " ") //change whitespace to a single space
-                        .replaceAll(" ", "_") //replace all spaces with an underscore
-                        .replace("nsbp", "")
-                        .replace("amp", "and");
-                String doc_path = "docs/" + path + "/" + title + ".html";
-                file = new File(doc_path); //specify the path
-                FileWriter fw = new FileWriter(file.getAbsoluteFile());
-                bw = new BufferedWriter(fw); //open a buffered writer to write to file
-                System.out.println("\tcreating " + doc_path + "...");
-                bw.write("<html>\n"); //write the html tag
-                bw.write("<h3>" + raw_title + "</h3>" + "\n"); //write the header tag
-            }
-            else
+        try{
+            for(Element e : el)
             {
-                if(bw != null)
-                {   //write misc content to the file
-                    bw.write(e.toString() + "\n");
+                if(headers.contains(e.tagName()))
+                {   //if the current element is one of the headers
+                    if(bw!=null)
+                    {   //close the file if it's not null and has been created
+                        bw.write("</html>");
+                        bw.close();
+                        System.out.println("\tdone.");
+                    }
+                    String raw_title = e.unwrap().toString();
+                    String title = raw_title.toLowerCase()
+                            .replaceAll("[^A-Za-z0-9]", " ") //get rid of all non-alphanumeric chars
+                            .replaceAll("\\s+", " ") //change whitespace to a single space
+                            .replaceAll(" ", "_") //replace all spaces with an underscore
+                            .replace("nsbp", "")
+                            .replace("amp", "and");
+                    String doc_path = "docs/" + path + "/" + title + ".html";
+                    file = new File(doc_path); //specify the path
+                    FileWriter fw = null;
+                    fw = new FileWriter(file.getAbsoluteFile());
+                    bw = new BufferedWriter(fw); //open a buffered writer to write to file
+                    System.out.println("\tcreating " + doc_path + "...");
+                    bw.write("<html>\n"); //write the html tag
+                    bw.write("<h3>" + raw_title + "</h3>" + "\n"); //write the header tag
                 }
-            }
+                else
+                {
+                    if(bw != null)
+                    {   //write misc content to the file
+                        bw.write(e.toString() + "\n");
+                    }
+                }
 
+            }
+            if(bw!=null)
+            {   //close the last file in the url
+                bw.write("</html>");
+                bw.close();
+                System.out.println("\tdone.");
+            }
+            System.out.println("\teof...\n\tmoving on...\n");
+        } catch(IOException e1){
+            e1.printStackTrace();
         }
-        if(bw!=null)
-        {   //close the last file in the url
-            bw.write("</html>");
-            bw.close();
-            System.out.println("\tdone.");
-        }
-        System.out.println("\teof...\n\tmoving on...\n");
     }
 }

@@ -1,5 +1,6 @@
 package com.example.parser;
 
+import com.sun.media.sound.UlawCodec;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,16 +18,17 @@ import java.util.Map;
  * in the US.
  * Created by oscar on 2/25/16.
  */
-public class Universities extends HtmlUtilities
+public class Universities
 {
-    private Map<String, String> universities = new HashMap<>(); //map for the univ's and urls
+    private List<String> universities = new ArrayList<>(); //list for the urls
+    private List<UrlClass> university_objects = new ArrayList<>();
 
     /**
      * Constructor
      */
     public Universities()
     {
-        setUniversities();
+
     }
 
     /**
@@ -40,50 +42,49 @@ public class Universities extends HtmlUtilities
         try {
             doc = Jsoup.connect(universities_url).get();
             System.out.println("Parsing...");
-            removeComments(doc); //strip comments
+            HtmlUtilities.removeComments(doc); //strip comments
             Elements div_contents = doc.getElementsByAttributeValue("class", "institution");
-            System.out.println(div_contents.size() + " URLs found...\nPlacing elements into a Map...");
+            System.out.println(div_contents.size() + " URLs found...\nPlacing elements into a List...");
+            int duplicates = 0;
             for(Element e : div_contents)
             {
-                //System.out.println("Key: \"" + e.text() + "\"\nData: " + e.attr("href"));
-                universities.put(e.attr("href"),e.text());
+                if(universities.size() != 0){
+                    if(!universities.contains(e.attr("href"))){
+                        universities.add(e.attr("href"));
+                    }
+                    else{
+                        duplicates++;
+                    }
+                }
+                else
+                {
+                    universities.add(e.attr("href"));
+                }
             }
-            System.out.println(universities.size() + " key-value sets placed into map.");
+            System.out.println(universities.size() + " URLs placed into list.\n" + duplicates + " duplicates URLs found/ignored.");
+            System.out.println("Creating a List of UrlClass objects...");
+            setUrlObjects(universities);
+            System.out.println(university_objects.size() + " UrlClass objects in List.\n");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Something went wrong. Check your internet connection.");
         }
     }
 
     /**
-     * Get hash map containing the university link, and name
+     * Get list containing university links
      */
-    public Map<String, String> getUniversities()
+    public List<String> getUniversities()
     {
         return universities;
     }
 
-    /**
-     * Print the map to review
-     */
-    public void printMap(){
-        for (Map.Entry<String,String> entry : universities.entrySet())
-        {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            System.out.println(key + " - " + value);
+    private void setUrlObjects(List<String> list){
+        for(String str : list){
+            university_objects.add(new UrlClass(str));
         }
     }
 
-    public List<UrlClass> setUrlObjects(Map<String, String> hash){
-        List<UrlClass> url_objects = new ArrayList<>();
-        try {
-            for (Map.Entry<String,String> entry : hash.entrySet()) {
-                String key = entry.getKey();
-                url_objects.add(new UrlClass(System.currentTimeMillis(), key, Universities.getDomainName(key)));
-            }
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        return url_objects;
+    public List<UrlClass> getUniversityObjects(){
+        return university_objects;
     }
 }

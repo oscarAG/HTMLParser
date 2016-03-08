@@ -66,35 +66,34 @@ public class HtmlParser extends HtmlUtilities
             urls.addAll(Files.readAllLines(Paths.get("assets/urls.txt")) //read from file
                     .stream().filter(line -> line.charAt(0) != '#') //if the line isn't commented out
                     .collect(Collectors.toList())); //add to list
-            System.out.println("files read.\nurls stored.");
-            //Randomize to cover order pattern
-            System.out.println("shuffling...");
-            long seed = System.nanoTime();
-            Collections.shuffle(urls, new Random(seed));
-            System.out.println("urls shuffled.");
-            System.out.println("mapping the urls to the domains...");
-            for(String url : urls)
-            {   //Get the domain from the url and map it
-                String domain = null;
-                domain = getDomainName(url).replace(".", "_");
-                url_domain.put(url, domain);
-            }
-            System.out.println("done.");
-            System.out.println("creating necessary directories from domains obtained...");
-            for(String key : url_domain.keySet())
-            {   //print the map and create a directory of the domain if it dne
-                String domain = url_domain.get(key).replace(".", "_");
-                File dir = new File("docs/" + domain);
-                if(dir.mkdir())
-                {
-                    System.out.println(dir.toString() + " created.");
-                }
-            }
-            System.out.println("done.\n");
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
+        System.out.println("files read.\nurls stored.");
+        //Randomize to cover order pattern
+        System.out.println("shuffling...");
+        long seed = System.nanoTime();
+        Collections.shuffle(urls, new Random(seed));
+        System.out.println("urls shuffled.");
+        System.out.println("mapping the urls to the domains...");
+        for(String url : urls)
+        {   //Get the domain from the url and map it
+            String domain = null;
+            domain = getDomainName(url).replace(".", "_");
+            url_domain.put(url, domain);
+        }
+        System.out.println("done.");
+        System.out.println("creating necessary directories from domains obtained...");
+        for(String key : url_domain.keySet())
+        {   //print the map and create a directory of the domain if it dne
+            String domain = url_domain.get(key).replace(".", "_");
+            File dir = new File("docs/" + domain);
+            if(dir.mkdir())
+            {
+                System.out.println(dir.toString() + " created.");
+            }
+        }
+        System.out.println("done.\n");
     }
 
     /**
