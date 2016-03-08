@@ -10,6 +10,7 @@ public class UrlClass {
     private String url, domain;
     private boolean visited;
 
+    //Time, url, domain
     public UrlClass(long time, String url, String domain)
     {
         this.time = time;
@@ -29,4 +30,5 @@ public class UrlClass {
     {
         return this.visited;
     }
+    public void resetTime(){time = System.currentTimeMillis();}
 }

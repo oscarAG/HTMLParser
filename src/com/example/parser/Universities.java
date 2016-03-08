@@ -6,7 +6,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,5 +72,18 @@ public class Universities extends HtmlUtilities
             String value = entry.getValue();
             System.out.println(key + " - " + value);
         }
+    }
+
+    public List<UrlClass> setUrlObjects(Map<String, String> hash){
+        List<UrlClass> url_objects = new ArrayList<>();
+        try {
+            for (Map.Entry<String,String> entry : hash.entrySet()) {
+                String key = entry.getKey();
+                url_objects.add(new UrlClass(System.currentTimeMillis(), key, Universities.getDomainName(key)));
+            }
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return url_objects;
     }
 }
