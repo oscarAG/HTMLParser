@@ -7,8 +7,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -167,12 +169,10 @@ public class HtmlUtilities
         URI uri;
         try {
             uri = new URI(url);
-            String domain = uri.getHost();
-            return domain.startsWith("www.") ? domain.substring(4) : domain;
+            return uri.getHost();
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            return null;
         }
-        return "https://google.com";
     }
     /****************************************************************************************************/
     //Parse the document into headers and contents
@@ -224,6 +224,19 @@ public class HtmlUtilities
             System.out.println("\teof...\n\tmoving on...\n");
         } catch(IOException e1){
             e1.printStackTrace();
+        }
+    }
+
+    //better way to determine if a url is relative or absolute
+    public static String ensureAbsoluteURL(String base, String maybeRelative) {
+        if (maybeRelative.startsWith("http")) {
+            return maybeRelative;
+        } else {
+            try {
+                return new URL(new URL(base), maybeRelative).toExternalForm();
+            } catch (MalformedURLException e) {
+                return null;
+            }
         }
     }
 }

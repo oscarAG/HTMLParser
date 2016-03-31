@@ -1,6 +1,8 @@
 package com.example.parser;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Main class of the program.
@@ -23,12 +25,32 @@ public class Main
         System.out.println("Visiting URLs...");
         while(!UrlClass.allVisited(url_objects))
         {   //while all urls haven't been visited
+            Iterator iter = url_objects.iterator();
+            //todo: concurrent modification, need to implement a queue probably. FUCK
             for(UrlClass obj : url_objects)
             {   //go through the list
                 if(!obj.isVisited() && (System.currentTimeMillis() - obj.getTime() > DELAY))
                 {   //if a url is ready to be visited
-                    //visit
+                    //visit todo: gonna run into problems when the children of children are read probably
+                    List<UrlClass> children = ChildUrl.getChildUrls(obj.getUrl(), HtmlUtilities.getDomainName(obj.getUrl()));
                     obj.setVisited(true);
+                    //add children to the list, IF they havent already been visited
+                    int counter = 0;
+                    boolean visited = false;
+                    for(int i = 0; i < children.size(); i++){
+                        for(int j = 0; j < url_objects.size(); j++){
+                            if(children.get(i).getUrl().equals(url_objects.get(j).getUrl())){
+                                visited = true;
+                                break;
+                            }
+                        }
+                        if(!visited){
+                            url_objects.add(children.get(i));
+                            counter++;
+                        }
+                        visited = false;
+                    }
+                    System.out.println("\t" + counter + " children added to master list.");
                     //reset timer for all with same domain
                     UrlClass.resetTimers(obj.getDomain(), url_objects);
                     //update counter
@@ -39,6 +61,7 @@ public class Main
             //print out the remaining number every 5 secs
             if(System.currentTimeMillis() - timer > DELAY)
             {   //if it's been more than 5 seconds since the last updated number print
+                System.out.println("\n" + marked + " have been visited.");
                 System.out.println("\n" + UrlClass.remaining(url_objects) + " total remaining..."); //print
                 System.out.println("Waiting " + DELAY + " ms before continuing...\n");
                 timer = System.currentTimeMillis(); //reset timer
