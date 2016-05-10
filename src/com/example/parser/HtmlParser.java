@@ -47,8 +47,8 @@ public class HtmlParser extends HtmlUtilities
                 unwrapNestedRedundancies(doc); //unwrap nested tags with only one child
                 parseDoc(headers, doc.getAllElements(), url_domain.get(url));
                 System.out.println("\twaiting " + delay + "ms before proceeding...\n");
-                Thread.sleep(delay);
-            } catch (IOException | InterruptedException e) {
+                //Thread.sleep(delay);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -63,13 +63,13 @@ public class HtmlParser extends HtmlUtilities
         HtmlParser.url_domain = new HashMap<>();
         System.out.println("reading urls from file...");
         try {
-            urls.addAll(Files.readAllLines(Paths.get("assets/urls.txt")) //read from file
+            urls.addAll(Files.readAllLines(Paths.get("assets/links.txt")) //read from file
                     .stream().filter(line -> line.charAt(0) != '#') //if the line isn't commented out
                     .collect(Collectors.toList())); //add to list
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("files read.\nurls stored.");
+        System.out.println("files read.\n" + urls.size() + " urls stored.");
         //Randomize to cover order pattern
         System.out.println("shuffling...");
         long seed = System.nanoTime();
@@ -79,14 +79,14 @@ public class HtmlParser extends HtmlUtilities
         for(String url : urls)
         {   //Get the domain from the url and map it
             String domain = null;
-            domain = getDomainName(url).replace(".", "_");
+            domain = getDomainName(url);
             url_domain.put(url, domain);
         }
         System.out.println("done.");
         System.out.println("creating necessary directories from domains obtained...");
         for(String key : url_domain.keySet())
         {   //print the map and create a directory of the domain if it dne
-            String domain = url_domain.get(key).replace(".", "_");
+            String domain = url_domain.get(key);
             File dir = new File("docs/" + domain);
             if(dir.mkdir())
             {

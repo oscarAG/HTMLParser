@@ -2,7 +2,6 @@ package com.example.parser;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * Main class of the program.
@@ -14,6 +13,7 @@ public class Main
 
     public static void main(String[] args)
     {
+        /*
         //Get all links to the universities in the United States
         Universities uni = new Universities();
         uni.setUniversities(); //init a list of all university urls
@@ -37,15 +37,15 @@ public class Main
                     //add children to the list, IF they havent already been visited
                     int counter = 0;
                     boolean visited = false;
-                    for(int i = 0; i < children.size(); i++){
-                        for(int j = 0; j < url_objects.size(); j++){
-                            if(children.get(i).getUrl().equals(url_objects.get(j).getUrl())){
+                    for (UrlClass aChildren : children) {
+                        for (UrlClass url_object : url_objects) {
+                            if (aChildren.getUrl().equals(url_object.getUrl())) {
                                 visited = true;
                                 break;
                             }
                         }
-                        if(!visited){
-                            url_objects.add(children.get(i));
+                        if (!visited) {
+                            url_objects.add(aChildren);
                             counter++;
                         }
                         visited = false;
@@ -69,13 +69,10 @@ public class Main
         }
         System.out.println(marked + " objects marked as visited."); //print
         System.out.println("Crawling completed in " + ((System.currentTimeMillis() - start_time) / 1000) + " seconds.");
-        /*
-        //Parse the URLs
-        try {
-            new HtmlParser();
-        } catch (IOException | URISyntaxException | InterruptedException e) {
-            e.printStackTrace();
-        }
         */
+
+        //Parse the URLs
+        new HtmlParser();
+
     }
 }
